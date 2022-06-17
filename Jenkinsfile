@@ -13,7 +13,7 @@ pipeline {
 		
 		stage('code for docker build') {
 			steps {
-				echo ( "code for docker build")
+				sh "docker build . -t amiyaranjansahoo/myappl"
 			}
 		}
 		

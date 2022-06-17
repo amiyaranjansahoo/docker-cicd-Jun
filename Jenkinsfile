@@ -1,6 +1,8 @@
-
 pipeline {
 	agent any
+	tools {
+	  maven 'maven3'
+	}
 	
 	stages {
 		stage('code for Build using maven') {

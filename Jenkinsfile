@@ -13,7 +13,7 @@ pipeline {
 		
 		stage('code for docker build') {
 			steps {
-				sh "docker build . -t amiyaranjansahoo/myappl"
+				sh "docker build . -t amiyaranjansahoo/myappl:${latestCommitid()}"
 			}
 		}
 		
@@ -21,7 +21,7 @@ pipeline {
 			steps {
 				withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerPassword')]) {
 				sh "docker login -u amiyaranjansahoo -p ${dockerPassword}"
-				sh "docker push amiyaranjansahoo/myappl"
+				sh "docker push amiyaranjansahoo/myappl:${latestCommitid()}"
 			}
 			}
 		}
@@ -32,9 +32,15 @@ pipeline {
 				
 				sshagent(['jenkins-linux-agent1']) {
 	sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.33.84 docker container rm -f myweb "
-    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.33.84 docker run -itd -p 8080:8080 --name myweb amiyaranjansahoo/myappl"
+    sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.33.84 docker run -itd -p 8080:8080 --name myweb amiyaranjansahoo/myappl:${latestCommitid()}"
 		}
 			}
 		}
 	}
+}
+
+
+def latestCommitid() {
+	def latestCommitid=sh returnStdout: true, script: 'git rev-parse --short HEAD'
+	return latestCommitid
 }
